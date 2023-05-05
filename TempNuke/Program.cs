@@ -1,5 +1,6 @@
 ﻿using System;
 using TempNuke.Core;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace TempNuke
@@ -41,12 +42,35 @@ namespace TempNuke
             switch (input)
             {
                 case "yes":
-                    //TODO: Delete temporary files.
+                    ListTemporaryFiles();
                     break;
                 default:
                     Utilities.ExitApplication();
                     break;
             }
+        }
+
+        internal static void ListTemporaryFiles()
+        {
+            Console.Clear();
+
+            List<string> temporaryFiles = TemporaryFileManager.Windows.GetTemporaryFilesList();
+            int length = temporaryFiles.Count;
+
+            for (int i = 0; i < length; i++)
+            {
+                switch (TemporaryFileManager.Windows.DeleteFile(temporaryFiles[i]))
+                {
+                    case true:
+                        Utilities.Logger.LogDeletion(i == length - 1 ? (temporaryFiles[i] + "\n\n") : (temporaryFiles[i] + "\n"));
+                        break;
+                    case false:
+                        Utilities.Logger.LogError("Failed to delete the file: " + (i == length - 1 ? (temporaryFiles[i] + "\n\n") : (temporaryFiles[i] + "\n")));
+                        break;
+                }
+            }
+            Utilities.Logger.LogInfo("All temporary files that could be deleted were deleted successfully!");
+            Console.ReadKey();
         }
     }
 }

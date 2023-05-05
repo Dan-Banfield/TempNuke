@@ -26,6 +26,30 @@ namespace TempNuke
                 Console.Write("] " + error);
             }
 
+            internal static void LogDeletion(string fileName)
+            {
+                ConsoleColor foregroundColor = Console.ForegroundColor;
+                Console.Write("[");
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("DELETED");
+
+                Console.ForegroundColor = foregroundColor;
+                Console.Write("] " + fileName);
+            }
+
+            internal static void LogInfo(string info)
+            {
+                ConsoleColor foregroundColor = Console.ForegroundColor;
+                Console.Write("[");
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write("INFO");
+
+                Console.ForegroundColor = foregroundColor;
+                Console.Write("] " + info);
+            }
+
             internal static void LogInput(string message)
             {
                 ConsoleColor foregroundColor = Console.ForegroundColor;

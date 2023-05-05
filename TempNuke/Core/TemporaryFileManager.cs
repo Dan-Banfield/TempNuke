@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace TempNuke.Core
 {
@@ -8,26 +8,34 @@ namespace TempNuke.Core
     {
         internal static class Windows
         {
-            internal static async Task<string[]> GetTemporaryFilesAsync()
+            /* private const string DRIVE = @"C:\";
+            private const string SEARCH_PATTERN = "*.tmp|*.bak|*.old|*~|*.dmp|*.log"; */
+
+            private static string[] temporaryFileLocations = new string[] { $@"C:\Users\{Environment.UserName}\AppData\Local\Temp" };
+
+            internal static List<string> GetTemporaryFilesList() 
             {
-                string[] result = new string[0];
-                await Task.Run(() =>
+                List<string> result = new List<string>();
+                try
                 {
-                    result = Directory.GetFiles($"C:\\Users\\{Environment.UserName}\\AppData\\Local\\Temp");
-                });
+                    foreach (string directory in temporaryFileLocations)
+                    {
+                        string[] filesList = Directory.GetFiles(directory);
+
+                        foreach (string file in filesList)
+                        {
+                            result.Add(file);
+                        }
+                    }
+                }
+                catch (UnauthorizedAccessException) { }
                 return result;
             }
 
-            internal static async Task DeleteFilesAsync(string[] inputFiles)
+            internal static bool DeleteFile(string filePath)
             {
-                await Task.Run(() => 
-                {
-                    int length = inputFiles.Length;
-                    for (int i = 0; i < length; i++)
-                    {
-                        File.Delete(inputFiles[length]);
-                    }
-                });
+                try { File.Delete(filePath); return true;  }
+                catch { return false; }
             }
         }
     }
