@@ -10,6 +10,8 @@ namespace TempNuke
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        internal static void ClearConsole() => Console.Clear();
+
         internal static void ExitApplication() => Environment.Exit(0);
 
         internal static class Logger

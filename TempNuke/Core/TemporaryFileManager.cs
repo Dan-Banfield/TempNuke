@@ -6,6 +6,8 @@ namespace TempNuke.Core
 {
     internal static class TemporaryFileManager
     {
+        private const int BYTES_TO_MEGABYTES = 1048576;
+
         internal static class Windows
         {
             /* private const string DRIVE = @"C:\";
@@ -20,8 +22,7 @@ namespace TempNuke.Core
                 {
                     foreach (string directory in temporaryFileLocations)
                     {
-                        string[] filesList = Directory.GetFiles(directory);
-
+                        string[] filesList = Directory.GetFiles(directory, "*", SearchOption.AllDirectories);
                         foreach (string file in filesList)
                         {
                             result.Add(file);
@@ -32,10 +33,35 @@ namespace TempNuke.Core
                 return result;
             }
 
-            internal static bool DeleteFile(string filePath)
+            internal static bool DeleteFile(string filePath, out double size)
             {
-                try { File.Delete(filePath); return true;  }
-                catch { return false; }
+                try 
+                {
+                    size = new FileInfo(filePath).Length;
+                    size = (size / BYTES_TO_MEGABYTES);
+                    File.Delete(filePath); 
+                    return true;  
+                }
+                catch 
+                {
+                    size = 0;
+                    return false; 
+                }
+            }
+
+            internal static void CleanUpDirectories()
+            {
+                try
+                {
+                    foreach (string directory in temporaryFileLocations)
+                    {
+                        foreach (string subDirectory in Directory.GetDirectories(directory))
+                        {
+                            Directory.Delete(subDirectory, true);
+                        }
+                    }
+                }
+                catch { }
             }
         }
     }
